@@ -1,26 +1,67 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --color-charcoal: #1a1a1a;
+  --color-charcoal-light: #2d2d2d;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8941e;
+  
+  --font-serif: Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-inter: system-ui, -apple-system, sans-serif;
+  --font-playfair: system-ui, -apple-system, serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+@layer base {
+  body {
+    @apply bg-charcoal text-gray-100;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gold-500 text-charcoal font-semibold px-8 py-3 rounded-lg hover:bg-gold-600 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-gold-500 text-gold-500 font-semibold px-8 py-3 rounded-lg hover:bg-gold-500/10 transition-colors;
+  }
+  
+  .card {
+    @apply bg-charcoal rounded-lg overflow-hidden;
+  }
+  
+  .section-title {
+    @apply text-4xl md:text-5xl font-serif font-bold text-white;
+  }
+  
+  .section-subtitle {
+    @apply text-gray-300 text-lg max-w-2xl mt-4;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out forwards;
 }
