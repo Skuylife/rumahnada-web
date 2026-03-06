@@ -8,7 +8,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
-const BASE_URL = "https://www.rumahnada.com";
+// const BASE_URL = "https://www.rumahnada.com";
+const BASE_URL = "https://rumahnada-web.vercel.app";
 
 export const metadata: Metadata = {
   // ── Basic ──────────────────────────────────────────────
