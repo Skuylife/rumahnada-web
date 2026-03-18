@@ -24,7 +24,7 @@ export default function WhatsappButton() {
             ✕
           </button>
           <p className={styles.tooltipText}>Ada pertanyaan? Chat kami!</p>
-          <p className={styles.tooltipSub}>Balas dalam 5 menit ⚡</p>
+          <p className={styles.tooltipSub}>Fast respone⚡</p>
         </div>
       )}
 
