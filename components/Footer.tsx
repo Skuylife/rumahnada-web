@@ -62,21 +62,6 @@ export default function Footer() {
                 <Phone className="h-4 w-4 shrink-0" />
                 <span>
                   +62 878-8752-5520
-                  <span className="ml-1 text-xs text-gray-600">(Admin 1)</span>
-                </span>
-              </a>
-
-              {/* WhatsApp 2  */}
-              <a
-                href="https://wa.me/6283871851052"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 hover:text-gold-500 transition-colors"
-              >
-                <Phone className="h-4 w-4 shrink-0" />
-                <span>
-                  +62 838-7185-1052
-                  <span className="ml-1 text-xs text-gray-600">(Admin 2)</span>
                 </span>
               </a>
 
