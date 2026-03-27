@@ -8,8 +8,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
-// const BASE_URL = "https://www.rumahnada.com";
-const BASE_URL = "https://rumahnada-web.vercel.app";
+const BASE_URL = "https://www.rumahnada.com";
+// const BASE_URL = "https://rumahnada-web.vercel.app";
 
 export const metadata: Metadata = {
   // ── Basic ──────────────────────────────────────────────
@@ -97,9 +97,9 @@ export const metadata: Metadata = {
   },
 
   // ── Verification (isi setelah daftar Google Search Console) ──
-  // verification: {
-  //   google: "GOOGLE_VERIFICATION_CODE_HERE",
-  // },
+  verification: {
+    google: "VewhAQIkKBTtU_qZDKGVwWHOtKh3vfeCt8cyPtt_3jQ",
+  },
 };
 
 // ── JSON-LD Structured Data ────────────────────────────────
