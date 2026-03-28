@@ -9,8 +9,9 @@ const ADD_ON_PERSONEL_PRICE = 1_000_000;
 const SOUND_UPGRADE_PRICE_PER_1000W = 1_000_000;
 const BASE_SOUND_WATT = 2000;
 
+// Fix 3: DJ 3jt → 4jt
 const EXTRA_SERVICES = [
-  { id: "dj",         label: "DJ",              price: 3_000_000 },
+  { id: "dj",         label: "DJ",              price: 4_000_000 },
   { id: "mc_wedding", label: "MC Wedding",       price: 2_500_000, onlyFor: "wedding" as EventType },
   { id: "mc_event",   label: "MC Event",         price: 5_000_000, onlyFor: "event"   as EventType },
   { id: "lighting",   label: "Lighting (mulai)", price: 3_000_000 },
@@ -19,18 +20,17 @@ const EXTRA_SERVICES = [
 type ServiceId = (typeof EXTRA_SERVICES)[number]["id"];
 type EventType = "wedding" | "event";
 
-// ─── Standalone service cards (DJ / MC / Lighting) ──────────────────────────
-// Harga flat, tanpa kalkulator. Bisa dipesan standalone maupun di-add-on ke paket.
 type StandaloneService = {
   id: string;
   title: string;
   price: number;
-  priceNote?: string;   // mis. "mulai dari" — ditampilkan di bawah harga
-  icon: string;         // emoji / karakter dekoratif
+  priceNote?: string;
+  icon: string;
   description: string;
   imageUrl?: string;
 };
 
+// Fix 3: DJ 4jt
 const STANDALONE_SERVICES: StandaloneService[] = [
   {
     id: "standalone-dj",
@@ -84,8 +84,9 @@ const OFFICE = {
     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.1!2d106.7307!3d-6.3563!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69eff1762c1cc5%3A0x322325c834323d3f!2sRumah%20Nada%20Entertainment%2C%20Pamulang%20Tangerang%20Selatan!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid",
 };
 
-// ─── Package data ─────────────────────────────────────────────────────────────
-const FLAT_PRICE_TITLES = ["Orchestra", "Mini Orchestra"];
+// ─── Package config ───────────────────────────────────────────────────────────
+// Fix 1: Ejaan benar "Orchestra" (bukan "Orkestra")
+const FLAT_PRICE_TITLES: string[] = ["Orchestra", "Mini Orchestra"];
 
 export type Package = {
   _id: string;
@@ -101,8 +102,9 @@ function isFlatPrice(pkg: Package): boolean {
   return !!pkg.flatPrice || FLAT_PRICE_TITLES.includes(pkg.title);
 }
 
+// Fix 7: Ganti note pertama soal sound system
 const NOTES = [
-  "Price belum termasuk Sound System (+Rp 1.500.000, FREE dari Akad–Resepsi, 1 operator standby)",
+  "Harga belum termasuk sound system. Jika sound tidak sepaket +charge Rp1.000.000",
   "Durasi 3 × 60 menit (3 jam)",
   "DP 40% maks. 1 minggu setelah deal booked, H-3 pelunasan (DP hangus jika ada pembatalan)",
   "Open request maksimal 5 lagu",
@@ -111,7 +113,7 @@ const NOTES = [
   "Pemadaman listrik tidak ada pemotongan harga",
 ];
 
-// ─── Price calculator (hanya untuk paket band) ────────────────────────────────
+// ─── Price calculator ─────────────────────────────────────────────────────────
 function calculateTotal({
   basePrice, flatPrice, eventType, location, extraPersonel,
   extraSoundKw, selectedServices, personelCount,
@@ -156,15 +158,9 @@ function WaIcon() {
 }
 
 // ─── Standalone Service Modal ─────────────────────────────────────────────────
-function StandaloneModal({
-  svc,
-  onClose,
-}: {
-  svc: StandaloneService;
-  onClose: () => void;
-}) {
+function StandaloneModal({ svc, onClose }: { svc: StandaloneService; onClose: () => void }) {
   const waText = [
-    `Halo! Saya ingin memesan layanan *${svc.title}* secara standalone.`,
+    `Halo! Saya ingin memesan layanan *${svc.title}*.`,
     `Harga: ${fmt(svc.price)}${svc.priceNote ? ` (${svc.priceNote})` : ""}`,
     `Mohon informasi ketersediaan dan detail lebih lanjut. Terima kasih!`,
   ].join("\n");
@@ -201,13 +197,11 @@ function StandaloneModal({
             </div>
           )}
 
-          {/* Deskripsi */}
           <div className={styles.modalSection}>
             <h4 className={styles.modalSectionLabel}>Tentang Layanan</h4>
             <p className={styles.standaloneDesc}>{svc.description}</p>
           </div>
 
-          {/* Info flat price */}
           <div className={styles.modalSection}>
             <div className={styles.standaloneFlatInfo}>
               <span className={styles.standaloneFlatIcon}>✦</span>
@@ -215,7 +209,6 @@ function StandaloneModal({
             </div>
           </div>
 
-          {/* Ketentuan */}
           <div className={styles.modalSection}>
             <h4 className={styles.modalSectionLabel}>Ketentuan</h4>
             <ul className={styles.notesList}>
@@ -240,16 +233,12 @@ function StandaloneModal({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PackagesSection({ packages = [] }: { packages?: Package[] }) {
-  // Package modal state
-  const [selected, setSelected]             = useState<Package | null>(null);
-  // Standalone modal state
-  const [selectedSvc, setSelectedSvc]       = useState<StandaloneService | null>(null);
-
-  // Calculator state (for package modal only)
-  const [eventType, setEventType]           = useState<EventType>("wedding");
-  const [location, setLocation]             = useState("DKI Jakarta");
-  const [extraPersonel, setExtraPersonel]   = useState(0);
-  const [extraSoundKw, setExtraSoundKw]     = useState(0);
+  const [selected, setSelected]               = useState<Package | null>(null);
+  const [selectedSvc, setSelectedSvc]         = useState<StandaloneService | null>(null);
+  const [eventType, setEventType]             = useState<EventType>("wedding");
+  const [location, setLocation]               = useState("DKI Jakarta");
+  const [extraPersonel, setExtraPersonel]     = useState(0);
+  const [extraSoundKw, setExtraSoundKw]       = useState(0);
   const [selectedServices, setSelectedServices] = useState<Set<ServiceId>>(new Set());
 
   const resetCalc = useCallback(() => {
@@ -260,10 +249,10 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
     setSelectedServices(new Set());
   }, []);
 
-  const openModal    = (pkg: Package)          => { resetCalc(); setSelected(pkg); };
-  const closeModal   = ()                      => setSelected(null);
-  const openSvcModal = (svc: StandaloneService) => setSelectedSvc(svc);
-  const closeSvcModal = ()                     => setSelectedSvc(null);
+  const openModal     = (pkg: Package)           => { resetCalc(); setSelected(pkg); };
+  const closeModal    = ()                        => setSelected(null);
+  const openSvcModal  = (svc: StandaloneService) => setSelectedSvc(svc);
+  const closeSvcModal = ()                        => setSelectedSvc(null);
 
   const personelCount = selected?.features?.length ?? 0;
 
@@ -291,7 +280,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
       `Halo! Saya tertarik dengan *${selected.title}*`,
       `Tipe Acara : ${eventType === "wedding" ? "Wedding" : "Event"}`,
       `Lokasi     : ${location}`,
-      extraPersonel > 0 ? `Tambah Personel : ${extraPersonel} orang` : null,
+      extraPersonel > 0 ? `Tambah Player  : ${extraPersonel} orang` : null,
       !isFlat ? `Sound System   : ${sw.toLocaleString("id-ID")} Watt` : null,
       svcs ? `Add-ons        : ${svcs}` : null,
       `Total Estimasi : ${fmt(totalPrice)}`,
@@ -299,7 +288,6 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
     return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(lines)}`;
   }, [selected, eventType, location, extraPersonel, extraSoundKw, selectedServices, totalPrice]);
 
-  // Total packages count for animation delay offset
   const pkgCount = packages.length;
 
   return (
@@ -315,7 +303,6 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
 
       {/* ── PACKAGE GRID ── */}
       <div className={styles.grid}>
-        {/* Band packages from CMS */}
         {packages.map((pkg, i) => (
           <div
             key={pkg._id}
@@ -336,13 +323,15 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
             <div className={styles.cardLogo}><LogoMark /></div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>{pkg.title}</h3>
+              {/* Fix 2: Tambah label "Mulai dari" sebelum harga */}
+              <p className={styles.cardPriceNote}>Start from</p>
               <p className={styles.cardPrice}>{fmt(pkg.price)}</p>
               <button className={styles.cardBtn}>Lihat Detail →</button>
             </div>
           </div>
         ))}
 
-        {/* ── STANDALONE SERVICE CARDS ── */}
+        {/* Fix 4: Badge sudah "Additional Service" */}
         {STANDALONE_SERVICES.map((svc, i) => (
           <div
             key={svc.id}
@@ -359,14 +348,14 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
               </div>
             )}
             <div className={styles.cardOverlay} />
+            {/* Fix 4: "Standalone" → "Additional Service" */}
             <div className={styles.standaloneBadge}>Additional Service</div>
             <div className={styles.cardLogo}><LogoMark /></div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>{svc.title}</h3>
-              <p className={styles.cardPrice}>
-                {svc.priceNote && <span className={styles.cardPriceNote}>{svc.priceNote} </span>}
-                {fmt(svc.price)}
-              </p>
+              {/* Fix 2: priceNote atau "Mulai dari" */}
+              <p className={styles.cardPriceNote}>{svc.priceNote ?? "Start from"}</p>
+              <p className={styles.cardPrice}>{fmt(svc.price)}</p>
               <button className={styles.cardBtn}>Lihat Detail →</button>
             </div>
           </div>
@@ -379,18 +368,11 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
           <h3 className={styles.mapTitle}>Kantor Pusat Kami</h3>
           <p className={styles.mapSubtitle}>Kunjungi kami atau hubungi via WhatsApp</p>
         </div>
-
         <div className={styles.officeLayout}>
           <div className={styles.mapEmbed}>
-            <iframe
-              src={OFFICE.embedSrc}
-              allowFullScreen
-              loading="lazy"
-              title={OFFICE.name}
-            />
+            <iframe src={OFFICE.embedSrc} allowFullScreen loading="lazy" title={OFFICE.name} />
             <div className={styles.mapOverlayLabel}>📍 {OFFICE.name}</div>
           </div>
-
           <div className={styles.officeCard}>
             <div className={styles.officeLogoWrap}><LogoMark size={48} /></div>
             <h4 className={styles.officeName}>{OFFICE.name}</h4>
@@ -426,7 +408,11 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                 <div className={styles.modalImageOverlay} />
                 <div className={styles.modalImageTitle}>
                   <h2>{selected.title}</h2>
-                  <p>{fmt(selected.price)}</p>
+                  {/* Fix 2: Mulai dari di modal header */}
+                  <p>
+                    <span style={{ fontSize: "11px", opacity: 0.7, marginRight: 4 }}>Start from</span>
+                    {fmt(selected.price)}
+                  </p>
                 </div>
               </div>
             )}
@@ -437,7 +423,10 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
               {!selected.imageUrl && (
                 <div className={styles.modalTitleBlock}>
                   <h2 className={styles.modalPkgName}>{selected.title}</h2>
-                  <p className={styles.modalBasePrice}>{fmt(selected.price)}</p>
+                  <p className={styles.modalBasePrice}>
+                    <span style={{ fontSize: "11px", opacity: 0.6, marginRight: 4 }}>Start from</span>
+                    {fmt(selected.price)}
+                  </p>
                 </div>
               )}
 
@@ -460,7 +449,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
               <div className={styles.modalSection}>
                 <h4 className={styles.modalSectionLabel}>Kalkulator Harga</h4>
 
-                {/* Tipe Acara */}
+                {/* Tipe Acara — Fix 6: hapus badge "+50%" */}
                 <div className={styles.calcRow}>
                   <span className={styles.calcLabel}>Tipe Acara</span>
                   {isFlatPrice(selected) ? (
@@ -469,11 +458,14 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                     <div className={styles.toggleGroup}>
                       <button type="button"
                         className={`${styles.toggleBtn} ${eventType === "wedding" ? styles.toggleBtnActive : ""}`}
-                        onClick={() => setEventType("wedding")}>Wedding</button>
+                        onClick={() => setEventType("wedding")}>
+                        Wedding
+                      </button>
+                      {/* Fix 6: tidak ada badge +50% lagi */}
                       <button type="button"
                         className={`${styles.toggleBtn} ${eventType === "event" ? styles.toggleBtnActive : ""}`}
                         onClick={() => setEventType("event")}>
-                        Event <span className={styles.toggleBadge}>+50%</span>
+                        Event
                       </button>
                     </div>
                   )}
@@ -496,7 +488,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                   </select>
                 </div>
 
-                {/* Tambah Personel */}
+                {/* Fix 5: "Tambah Personil" → "Tambah Player" */}
                 <div className={styles.calcRow}>
                   <span className={styles.calcLabel}>
                     Tambah Player
@@ -525,8 +517,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                   {isFlatPrice(selected) ? (
                     <a
                       href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo! Saya ingin tanya kebutuhan Sound System untuk paket *${selected.title}*. Mohon informasinya, terima kasih!`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target="_blank" rel="noopener noreferrer"
                       className={styles.askAdminBtn}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
@@ -576,7 +567,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                 </div>
               </div>
 
-              {/* Notes */}
+              {/* Notes — Fix 7: note sudah diupdate di konstanta NOTES */}
               <div className={styles.modalSection}>
                 <h4 className={styles.modalSectionLabel}>Ketentuan</h4>
                 <ul className={styles.notesList}>
