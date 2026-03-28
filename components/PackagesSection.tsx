@@ -35,7 +35,7 @@ const STANDALONE_SERVICES: StandaloneService[] = [
   {
     id: "standalone-dj",
     title: "DJ",
-    price: 3_000_000,
+    price: 4_000_000,
     icon: "🎧",
     description: "DJ profesional siap memeriahkan acara Anda dengan mixing live berkualitas tinggi.",
   },
@@ -85,7 +85,7 @@ const OFFICE = {
 };
 
 // ─── Package data ─────────────────────────────────────────────────────────────
-const FLAT_PRICE_TITLES = ["Okestra", "Mini Okestra"];
+const FLAT_PRICE_TITLES = ["Orchestra", "Mini Orchestra"];
 
 export type Package = {
   _id: string;
@@ -359,7 +359,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
               </div>
             )}
             <div className={styles.cardOverlay} />
-            <div className={styles.standaloneBadge}>Bisa Standalone</div>
+            <div className={styles.standaloneBadge}>Additional Service</div>
             <div className={styles.cardLogo}><LogoMark /></div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>{svc.title}</h3>
@@ -499,7 +499,7 @@ export default function PackagesSection({ packages = [] }: { packages?: Package[
                 {/* Tambah Personel */}
                 <div className={styles.calcRow}>
                   <span className={styles.calcLabel}>
-                    Tambah Personel
+                    Tambah Player
                     <span className={styles.calcHint}>+Rp {ADD_ON_PERSONEL_PRICE.toLocaleString("id-ID")}/orang</span>
                   </span>
                   <div className={styles.stepper}>
